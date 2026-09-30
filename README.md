@@ -1,1 +1,0 @@
-# APP-d-ch-m-synop
