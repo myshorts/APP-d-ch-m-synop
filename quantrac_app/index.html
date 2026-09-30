@@ -1,0 +1,40 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b5cff"><link rel="manifest" href="manifest.webmanifest"><title>Quan Trắc Decoder</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#eef3f9;color:#132238}header{background:linear-gradient(135deg,#0b5cff,#063baf);color:white;padding:24px 18px 28px;border-radius:0 0 24px 24px;box-shadow:0 8px 24px #0b5cff25}header h1{margin:0 0 5px;font-size:25px}header p{margin:0;opacity:.9;font-size:14px}.wrap{max-width:720px;margin:auto;padding:16px}.card{background:white;border-radius:18px;padding:16px;margin:0 0 14px;box-shadow:0 4px 18px #10204012}.label{font-size:13px;font-weight:700;margin-bottom:8px;color:#4b6078}.code{width:100%;min-height:116px;border:2px solid #dbe4ef;border-radius:14px;padding:14px;font-size:18px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;outline:none;resize:vertical}.code:focus{border-color:#0b5cff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.btn{border:0;border-radius:13px;padding:13px 12px;font-weight:800;font-size:15px;cursor:pointer}.primary{background:#0b5cff;color:white}.secondary{background:#eaf1fb;color:#0b4fbf}.hint{font-size:12px;color:#687b91;margin-top:9px;line-height:1.5}.result{display:none}.result.show{display:block}.badge{display:inline-block;background:#e8f1ff;color:#0752c7;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin-bottom:10px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.item{border:1px solid #e3eaf2;border-radius:13px;padding:11px;background:#fbfcfe}.item b{display:block;font-size:12px;color:#63768b;margin-bottom:4px}.item span{font-size:15px;line-height:1.35}.full{grid-column:1/-1}.error{color:#b42318;background:#fff0ef;border-color:#ffd3cf}.ok{color:#067647;background:#ecfdf3;border-color:#b7ebcf}.section-title{font-size:16px;margin:2px 0 11px}.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{padding:7px 10px;border-radius:999px;background:#f0f4f8;border:1px solid #dde5ee;font-size:12px;cursor:pointer}.footer{font-size:11px;color:#718096;text-align:center;padding:5px 0 20px}@media(max-width:430px){.row{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.item span{font-size:14px}}
+</style></head><body><header><div class="wrap"><h1>Quan Trắc Decoder</h1><p>Giải mã mã quan trắc khí tượng nội địa trên điện thoại</p></div></header><main class="wrap"><section class="card"><div class="label">MÃ QUAN TRẮC</div><textarea id="input" class="code" placeholder="Ví dụ: 48820 12563 12345 10123 20012 333 10156 20120 40012 52010 60012"></textarea><div class="chips"><button class="chip" data-code="48820 12563 12345 10123 20012 333 10156 20120 40012 52010 60012">Mẫu SYNOP</button><button class="chip" data-code="METAR VV 0200 N 8 2000 RA 18012KT 25/24 Q1010">Mẫu METAR</button></div><div class="row"><button class="btn primary" id="decode">Giải mã</button><button class="btn secondary" id="clear">Xóa</button></div><div class="hint">Có thể dán cả chuỗi dài. Ứng dụng tự tách nhóm 5 ký tự của SYNOP và giải mã các nhóm nhận diện được.</div></section><section id="result" class="card result"><div class="badge">KẾT QUẢ</div><div id="station" class="section-title"></div><div id="grid" class="grid"></div></section><section class="card"><h2 class="section-title">Các mã đang hỗ trợ</h2><div class="grid"><div class="item"><b>VV</b><span>Tầm nhìn ngang</span></div><div class="item"><b>N / Ns</b><span>Lượng mây</span></div><div class="item"><b>ChsHs / CL CM CH</b><span>Loại và độ cao mây</span></div><div class="item"><b>ww</b><span>Thời tiết hiện tại</span></div><div class="item"><b>W1W2</b><span>Thời tiết đã qua</span></div><div class="item"><b>dd / ff</b><span>Hướng, tốc độ gió</span></div><div class="item"><b>TTT / TdTd</b><span>Nhiệt độ, điểm sương</span></div><div class="item"><b>uu</b><span>Độ ẩm tương đối</span></div><div class="item"><b>PPP</b><span>Khí áp</span></div><div class="item"><b>P24</b><span>Biến áp 24 giờ</span></div><div class="item"><b>RRR</b><span>Lượng mưa</span></div><div class="item"><b>Tx/Tm</b><span>Nhiệt độ cực trị</span></div></div></section><div class="footer">Thiết kế dựa trên các trường quan trắc có trong bộ Sudung26 bạn cung cấp.</div></main><script>
+const ww={0:'Không có hiện tượng đáng kể',1:'Mây tan hoặc phát triển',2:'Trạng thái bầu trời không thay đổi',3:'Mây hình thành/phát triển',4:'Tầm nhìn giảm do khói/haze',5:'Khói',6:'Bụi lơ lửng',7:'Bụi/cát hoặc aerosol',8:'Khói mù/khói',9:'Hiện tượng che khuất mạnh'};
+function temp(s){let n=Number(s.slice(-2))/10;return (s[0]==='1'?-n:n).toFixed(1)+' °C'}
+function pressure(g){let n=Number(g.slice(1));let h=1000+(n<500?n:n-500);return h.toFixed(1)+' hPa'}
+function vis(g){let n=Number(g); if(g==='////')return 'Không xác định'; if(n<=50)return (n*100)+' m'; if(n<=80)return ((n-50)*1000)+' m'; return '≥10 km'}
+function winddir(d){if(d==='99')return 'Không xác định'; let n=Number(d)*10; let names=['Bắc','Bắc Đông Bắc','Đông Bắc','Đông Đông Bắc','Đông','Đông Đông Nam','Đông Nam','Nam Đông Nam','Nam','Nam Tây Nam','Tây Nam','Tây Tây Nam','Tây','Tây Tây Bắc','Tây Bắc','Bắc Tây Bắc']; return n+'° ('+names[Math.round(n/22.5)%16]+')'}
+function decode(raw){
+ let s=raw.trim().replace(/\s+/g,' '); let tokens=s.split(' '); let station=tokens.find(x=>/^\d{5}$/.test(x))||''; let groups=tokens.filter(x=>/^[0-9/]{5}$/.test(x)); let out=[];
+ if(!groups.length) return {error:'Chưa nhận diện được nhóm mã 5 ký tự. Hãy dán chuỗi SYNOP có các nhóm số.'};
+ if(station){out.push(['Trạm / nhóm đầu',station,'full']);}
+ for(const g of groups){
+  if(/^\d{5}$/.test(g)){
+   let a=+g[0];
+   if(a===0){out.push(['Mã 0 — nhiệt độ / độ ẩm', 'Nhóm '+g,'full']);}
+   if(a===1) out.push(['Nhiệt độ không khí (TTT)',temp(g)]);
+   if(a===2) out.push(['Điểm sương (TdTd)',temp(g)]);
+   if(a===3) out.push(['Mây / thời tiết phụ', 'Nhóm '+g]);
+   if(a===4) out.push(['Khí áp (PPP)',pressure(g)]);
+   if(a===5) out.push(['Biến áp / xu thế', 'Mã '+g]);
+   if(a===6) out.push(['Mưa / lượng giáng thủy', 'Nhóm '+g]);
+   if(a===7) out.push(['Thời tiết hiện tại', 'ww ≈ '+g.slice(1)]);
+   if(a===8) out.push(['Mây (N/CL/CM/CH)', 'Nhóm '+g]);
+   if(a===9) out.push(['Nhóm bổ sung', 'Mã '+g]);
+  }
+ }
+ // Interpret common first 5-digit SYNOP group: iRiXhVV or iRixhVV depending station feed.
+ const first=groups[0]; if(first){out.push(['Tầm nhìn (VV)',vis(first.slice(3,5))]);out.push(['Độ cao mây thấp (h)', 'Mã '+first[2]]);}
+ for(const g of groups){
+  if(/^\d{5}$/.test(g)&&g[0]==='1') out.push(['Nhiệt độ',temp(g)]);
+  if(/^\d{5}$/.test(g)&&g[0]==='2') out.push(['Điểm sương',temp(g)]);
+  if(/^\d{5}$/.test(g)&&g[0]==='4') out.push(['Áp suất mực trạm',pressure(g)]);
+ }
+ return {groups,out};
+}
+function render(r){const box=document.getElementById('result'), grid=document.getElementById('grid'), st=document.getElementById('station');box.classList.add('show');grid.innerHTML=''; if(r.error){st.textContent='Không thể giải mã'; grid.innerHTML='<div class="item error full"><span>'+r.error+'</span></div>';return} st.textContent='Đã nhận diện '+r.groups.length+' nhóm mã'; for(const [a,b,c] of r.out){let d=document.createElement('div');d.className='item '+(c||'');d.innerHTML='<b>'+a+'</b><span>'+b+'</span>';grid.appendChild(d)}}
+document.getElementById('decode').onclick=()=>render(decode(document.getElementById('input').value));document.getElementById('clear').onclick=()=>{document.getElementById('input').value='';document.getElementById('result').classList.remove('show')};document.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{document.getElementById('input').value=x.dataset.code;render(decode(x.dataset.code))});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script></body></html>
